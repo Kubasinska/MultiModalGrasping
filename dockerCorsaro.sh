@@ -1,5 +1,4 @@
 # docker run --gpus all -v $(pwd):/workspace -it nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
-# sudo docker run --gpus all -v $(pwd):/workspace -p 5000:8888 -p 5001:6006 -it nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 apt-get update
 apt-get install -y nano git
 touch /root/.nanorc
@@ -21,7 +20,7 @@ apt-get install -y g++-4.8
 TF_CFLAGS=( $(python -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_compile_flags()))') )
 TF_LFLAGS=( $(python -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_link_flags()))') )
 
-cd scripts/PointNet2/tf_ops
+cd /workspace/scripts/PointNet2/tf_ops
 
 cd 3d_interpolation
 g++-4.8 -std=c++11 tf_interpolate.cpp -o tf_interpolate_so.so -shared -fPIC -I /usr/local/cuda-10.0/include -lcudart -L /usr/local/cuda-10.0/lib64/ ${TF_CFLAGS[@]} ${TF_LFLAGS[@]} -O2
