@@ -4,6 +4,7 @@ import numpy as np
 from scripts import cloud_loader
 from scripts import pointnet_wrapper
 import sys
+import pickle
 
 tf.reset_default_graph()
 
@@ -62,42 +63,31 @@ bn_decay_decay_rate = 0.5
 bn_decay_clip = 0.99
 
 # Network
-# net = pointnet_wrapper.PointNet(batch_size, 1024, 3, learning_rate, decay_step, decay_rate, \
-# bn_init_decay, bn_decay_decay_step, bn_decay_decay_rate, bn_decay_clip, num_labels=5)
-
-# net_vars = [v for v in tf.global_variables()]
 
 
 session =  tf.Session() 
 init = tf.global_variables_initializer()
 session.run(init)
 
+session.run(test_init_op)
 
+net = pointnet_wrapper.PointNet(batch_size, 1024, 3, learning_rate, decay_step, decay_rate, \
+bn_init_decay, bn_decay_decay_step, bn_decay_decay_rate, bn_decay_clip, num_labels=5)
 
-# session.run(test_init_op)
+net_vars = {v.name:v for v in tf.global_variables()}
 
-# weight are inside the session
-saver = tf.train.import_meta_graph("/workspace/output/2021_11_04_14_50_53/tf_model_epoch_35.meta")
-saver.restore(session, tf.train.latest_checkpoint("/workspace/output/2021_11_04_14_50_53/"))
+with open("/workspace/output/2021_11_04_14_50_53/save_weights.pkl", "rb") as f:
+    data = pickle.load(f)
 
-sys.exit()
-resored_vars = [v for v in tf.global_variables() if v not in net_vars]
+for key, value in data.items():
+    if key in net_vars:
+        session.run(net_vars[key].assign(value))
+    else:
+        raise ValueError("{} not in net_vars".format(key))
 
 
 
 data, labels = session.run(next_test_element)
-
-graph = tf.get_default_graph()   
-
-print "before"
-print evaluate_equal(resored_vars, net_vars)
-
-for resored, original in zip(resored_vars, net_vars):
-    session.run(original.assign(resored))
-
-print "After"
-print evaluate_equal(resored_vars, net_vars)
-
 
 """
 Note:
