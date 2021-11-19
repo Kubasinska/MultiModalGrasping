@@ -97,16 +97,14 @@ ops = [op for op in graph.get_operations()]
 Extract ops, tensors, placeholders:
 https://stackoverflow.com/questions/36883949/in-tensorflow-get-the-names-of-all-the-tensors-in-a-graph
 """
-# out = graph.get_tensor_by_name('fc6/Relu:0')
-
-# feed_dict = {graph.get_tensor_by_name('Placeholder:0'): data,
-#             graph.get_tensor_by_name('Placeholder_2:0'): False}
-
-# pred = session.run([out], feed_dict=feed_dict)
 
 feed_dict = {net.ops['pointclouds_pl']: data,
 net.ops['labels_pl']: labels,
 net.ops['is_training_pl']: False}
+
+print labels
+print data
+
 
 
 
