@@ -26,7 +26,7 @@ custom_op = ["/workspace/scripts/PointNet2/tf_ops/3d_interpolation/tf_interpolat
 loaded_op = [tf.load_op_library(op) for op in custom_op]    
 
 num_cores = 4
-batch_size = 16
+batch_size = 1
 
 test_data_path = [i.tolist() for i in np.load("/workspace/scripts/test_data_path.npy", allow_pickle=True)]
 
@@ -64,8 +64,11 @@ bn_decay_clip = 0.99
 
 # Network
 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
 
-session =  tf.Session() 
+
+session =  tf.Session(config=config)
 init = tf.global_variables_initializer()
 session.run(init)
 
